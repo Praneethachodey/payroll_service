@@ -1,6 +1,7 @@
 package come.bridgelabz.employeeWage;
 
 import java.nio.file.*;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -96,4 +97,33 @@ public class IOFileAPITest {
 		Map<String,Double> averageSalaryByGender = employeeService.readCountByGender(IOService.DB_IO);
 		Assert.assertTrue(averageSalaryByGender.get("m").equals(2.0));
 	}
+	
+	@Test
+	public void givenPayroll_WhenAddedEmployee_shouldSyncWithDB()
+	{
+		EmployeePayrollService employeeService = new EmployeePayrollService();
+		employeeService.readEmployeeData(IOService.DB_IO);
+		employeeService.addEmployeeToPayroll("Jahnavi",2000000.00,LocalDate.now(),"f");
+		boolean result = employeeService.checkEmployeeInSyncWithDB("jahnavi");
+		Assert.assertTrue(result);
+		}
+	
+	@Test
+	public void givenPayroll_WhenAddedEmployeeToBothTables_shouldSyncWithDB() throws SQLException
+	{
+		EmployeePayrollService employeeService = new EmployeePayrollService();
+		employeeService.readEmployeeData(IOService.DB_IO);
+		employeeService.addEmployeeToPayrollBothTables("Jahnavi",2000000.00,LocalDate.now(),"f","capGemini","IT");
+		boolean result = employeeService.checkEmployeeInSyncWithDB("jahnavi");
+		Assert.assertTrue(result);
+		}
+	
+	@Test
+	public void givenEmployee_Payroll_WhenRemovedEmployeeToBothTables_shouldSyncWithDB() throws SQLException
+	{
+		EmployeePayrollService employeeService = new EmployeePayrollService();
+		employeeService.readEmployeeData(IOService.DB_IO);
+		boolean result = employeeService.removeEmployee("vihari");
+		Assert.assertTrue(result);
+		}
 }
